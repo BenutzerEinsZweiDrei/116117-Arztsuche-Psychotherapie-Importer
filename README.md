@@ -1,4 +1,4 @@
-![Header Image](./header.jpg)  
+![Header Image](images/header.jpg)  
 
 # 116117 Psychotherapie-Suche Exporter
 
@@ -27,13 +27,13 @@ Ich habe diese App entwickelt, weil es extrem schwierig ist, freie gesetzliche T
 
 Die folgenden Dateien zeigen, welche Daten über die App exportiert werden können:
 
-- ![Beispiel Export Praxisdaten](./beispiel_export_praxisdaten.png)  
+- ![Beispiel Export Praxisdaten](images/beispiel_export_praxisdaten.png)  
   Beispiel für die exportierten Praxisdaten (Adresse, Fachrichtung, Telefonnummer).
 
-- ![Beispiel Export Telefonsprechzeiten](./beispiel_export_telefonsprechzeiten.png)  
+- ![Beispiel Export Telefonsprechzeiten](images/beispiel_export_telefonsprechzeiten.png)  
   Beispiel für die exportierten Telefonsprechzeiten.
 
-- ![Beispiel Template Excel](./Beispiel%20Template.xlsx)  
+- ![Beispiel Template Excel](images/Beispiel%20Template.xlsx)  
   Beispiel einer Excel-Datei, in der die Suchergebnisse exportiert werden können.
 
 ## Nutzung der 116117 API
