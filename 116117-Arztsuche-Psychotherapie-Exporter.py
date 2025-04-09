@@ -115,7 +115,7 @@ if st.button("🔎 Psychotherapeut*innen finden"):
         if lat is not None and lon is not None:
             url = "https://arztsuche.116117.de/api/data"
             headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
                 "Host": "arztsuche.116117.de",
                 "req-val": req_val,
                 "Authorization": f"Basic {auth_code}"
