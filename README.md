@@ -52,5 +52,5 @@ Die Daten für die Arztsuche werden über die API von [116117.de](https://arztsu
 
 Dieses Projekt steht unter der **MIT-Lizenz**.
 
-Diese App verwendet Daten aus dem Repository [WZBSocialScienceCenter/plz_geocoord], das unter der **Apache License 2.0** lizenziert ist. Weitere Informationen unter: http://www.apache.org/licenses/
+Diese App verwendet Daten aus dem Repository [WZBSocialScienceCenter/plz_geocoord](https://github.com/WZBSocialScienceCenter/plz_geocoord), das unter der **Apache License 2.0** lizenziert ist. Weitere Informationen unter: http://www.apache.org/licenses/
 
