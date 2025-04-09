@@ -1,4 +1,4 @@
-[Header Image](./header.jpg)  
+![Header Image](./header.jpg)  
 
 # 116117 Psychotherapie-Suche Exporter
 
