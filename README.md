@@ -42,12 +42,6 @@ Die Daten für die Arztsuche werden über die API von [116117.de](https://arztsu
 
 **Hinweis:** Derzeit ist das Copy-Paste der API-Infos etwas sperrig. Es könnte verbessert werden, um die Nutzung der Daten leichter und benutzerfreundlicher zu gestalten. Falls jemand hier eine Verbesserung beitragen kann, ist dies sehr willkommen!
 
-## Verwendung
-
-1. PLZ eingeben  
-2. Optional: Kasse auswählen  
-3. Ergebnisse ansehen oder herunterladen  
-
 ## Lizenz
 
 Dieses Projekt steht unter der **MIT-Lizenz**.
