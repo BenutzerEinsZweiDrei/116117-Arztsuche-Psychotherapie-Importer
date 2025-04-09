@@ -2,14 +2,17 @@
 
 Ein einfacher 116117 Psychotherapie Suche Exporter zur Unterstützung bei der Suche nach Psychotherapieplätzen in Deutschland.
 
+## Live-App
+
+Du kannst die Live-Version der App direkt hier aufrufen:
+
+[![Zur Live-App](https://img.shields.io/badge/Zur%20Live--App-%231E7A1F?style=for-the-badge&logo=streamlit&logoColor=white)](https://116117-psychotherapie-suche-exporter.streamlit.app/)
+
+
 ## Hintergrund
 
 Ich habe diese App entwickelt, weil es extrem schwierig ist, freie gesetzliche Therapieplätze zu finden. Oft muss man zahlreiche Praxen kontaktieren, nur um immer wieder zu hören, dass keine Kapazitäten frei sind. Dieses Problem ist systemisch – und wer nachweislich keinen Platz findet, hat unter Umständen Anspruch auf Kostenerstattung durch die Krankenkasse wegen Systemversagen. Diese App soll helfen, schneller und einfacher dokumentiert nach verfügbaren Angeboten zu suchen. Zudem kann ein Export der Arztsuche als Datei sehbehinderten Personen helfen, wie in diesem [FragDenStaat-Post](https://fragdenstaat.de/a/299392) angefragt.
 
-## Live-App
-
-Du kannst die Live-Version der App hier aufrufen:  
-[https://116117-psychotherapie-suche-exporter.streamlit.app/](https://116117-psychotherapie-suche-exporter.streamlit.app/)
 
 ## Funktionen
 
