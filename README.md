@@ -7,9 +7,14 @@ Ein einfacher 116117 Psychotherapie Suche Exporter zur Unterstützung bei der Su
 
 ## Live-App
 
-Du kannst die Live-Version der App direkt hier aufrufen:
+<p align="left">
+  <a href="https://116117-psychotherapie-suche-exporter.streamlit.app/" target="_blank">
+    <img src="https://img.shields.io/badge/%20Zur%20Live--App-Starten-blue?style=for-the-badge&logo=streamlit" 
+         alt="Live App" 
+         height="50">
+  </a>
+</p>
 
-[![Zur Live-App](https://img.shields.io/badge/🚀_Hier_starten-116117_Psychotherapie_Finder-brightgreen?style=for-the-badge)](https://116117-psychotherapie-suche-exporter.streamlit.app/)
 
 
 ## Hintergrund
