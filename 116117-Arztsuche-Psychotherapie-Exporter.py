@@ -49,41 +49,22 @@ def c(e: float, t: float):
 st.set_page_config(page_title="116117 Therapie Finder", page_icon="🧠", layout="centered")
 
 st.title("🧠 116117 Psychotherapie Finder")
-st.markdown("Die Suche nach einem Therapieplatz kann ganz schön anstrengend sein. Diese App soll dir dabei helfen! Sie speichert die Daten von https://arztsuche.116117.de/ strukturiert, damit du dir das lästige Copy & Paste sparen kannst. \n\n Du bekommst eine Liste mit maximal 100 Psychotherapeut*innen sowie einen Wochenplan der Telefonsprechzeiten. So wird die Suche nach einem Therapieplatz hoffentlich leichter – oder dein Antrag auf Kostenerstattung etwas unkomplizierter! :) \n\n Links findest du Hinweise zu den req-val- und Authorization-Code-Feldern, die für die 116117 API notwendig sind.")
+st.markdown("Die Suche nach einem Therapieplatz kann ganz schön anstrengend sein. Diese App soll dir dabei helfen! Sie speichert die Daten von https://arztsuche.116117.de/ strukturiert, damit du dir das lästige Copy & Paste sparen kannst. \n\n Du bekommst eine Liste mit maximal 100 Psychotherapeut*innen sowie einen Wochenplan der Telefonsprechzeiten. So wird die Suche nach einem Therapieplatz hoffentlich leichter – oder dein Antrag auf Kostenerstattung etwas unkomplizierter! :) ")
 
 # Sidebar für Hilfestellung
 with st.sidebar:
-    st.header("🧑‍💻 Wie finde ich req-val und Authorization?")
+    st.header("Infos")
     st.markdown("""
-                
-    🛈 Die Authorization- und req-val-Werte sind notwendig, um die API-Anfrage zu authentifizieren.\n
-                
-    **1. Gehe auf 116117:**  
-    Öffne die Webseite [https://arztsuche.116117.de/](https://arztsuche.116117.de/)
-
-    **2. Öffne die Entwicklertools:**  
-    Drücke `CTRL + SHIFT + I` oder rechtsklicke auf die Seite und wähle „Untersuchen“, um die Entwicklertools zu öffnen.
-
-    **3. Gehe zum Tab "Network":**
-
-    **4. Führe eine Suche durch:**  
-    Suche nach Psychotherapie mit der selben PLZ, wie hier.
-
-    **5. Finde die Anfrage "data" im Network tab:**  
-    Im Network tab solltest du jetzt viele Werte sehen. Klicke auf die Anfrage „data“, die erscheint, nachdem die Seite die Therapeuten lädt.
-
-    **6. Authorization und req-val finden:**  
-    - Im Reiter **"Headers"** unter **"Request Headers"** findest du die beiden Werte:
-        - **Authorization**: Der Wert, der nach „Basic“ folgt.
-        - **req-val**: Der Wert, der nach „req-val“ steht.
     
-    Du kannst diese Werte dann in das App-Formular eintragen und suchen! :) \n
+    **🔎 Wie funktioniert die App?**  
+    Du gibst eine Postleitzahl und ein paar Filter ein. Die App bestimmt den passenden Ort und fragt die offizielle Arztsuche automatisiert nach Psychotherapeut*innen in deiner Nähe. Die Ergebnisse werden aufbereitet, doppelte Infos bereinigt und die wichtigsten Kontaktdaten samt telefonischen Sprechzeiten übersichtlich zusammengestellt. Am Ende bekommst du alles als Excel-Datei zum Download – praktisch für deine Anrufliste oder als Nachweis für die Krankenkasse.        
 
-    ---
+    **❓ Warum existiert diese App?**  
+    Therapieplätze sind rar. Wartelisten voll, besonder mit gesetzlicher Versicherung. Man muss oft zig Praxen anrufen, bekommt nur Absagen, Wartezeiten betragen häufig 1 Jahr und der ganze Prozess ist sehr kräftezehrend. Das Problem ist schon lange bekannt. Mit der App will ich den Prozess erleichtern: schnell, strukturiert, mit Sprechzeiten. Wer keinen Platz findet, kann die Excel-Datei als Basis für den Kontaktnachweis für die Krankenkasse nutzen, um eine Kostenerstattung bei Systemversagen zu beantragen. Zudem kann ein Export der Arztsuche als Datei sehbinderten Personen helfen, siehe https://fragdenstaat.de/a/299392.
+
+    **⚙️ Ein Blick hinter die Kulissen**
+    App greift im Hintergrund auf die gleiche Schnittstelle (API) zu, die auch die Webseite der Arztsuche nutzt. Normalerweise werden diese Daten nur für den Browser aufbereitet – hier übernimmt die App den technischen Teil: sie erzeugt automatisch die notwendigen Zugangs-Codes, stellt eine Anfrage an die API, filtert die Ergebnisse nach deinen Eingaben und wandelt alles in eine Excel-Datei um. Es werden keine eigenen Datenbanken betrieben und keine persönlichen Daten gespeichert, sondern nur die öffentlich zugänglichen Informationen neu strukturiert.
     
-    **❓ Warum hast du diese App gebaut?**  
-    Ich habe die App gebaut, weil es extrem schwer ist, einen Therapieplatz mit gesetzlicher Versicherung zu finden. Man muss oft zig Praxen anrufen, bekommt nur Absagen, Wartezeiten betragen häufig 1 Jahr und der ganze Prozess ist sehr kräftezehrend. Mit der App will ich den Prozess erleichtern: schnell, strukturiert, mit Sprechzeiten. Und: Wer keinen Platz findet, kann die Excel-Datei als Basis für den Kontaktnachweis für die Krankenkasse nutzen, um eine Kostenerstattung bei Systemversagen zu beantragen. Zudem kann ein Export der Arztsuche als Datei sehbinderten Personen helfen, siehe https://fragdenstaat.de/a/299392.
-
     ---            
     Diese App verwendet Daten aus dem Repository [WZBSocialScienceCenter/plz_geocoord](https://github.com/WZBSocialScienceCenter/plz_geocoord), das unter der Apache License 2.0 lizenziert ist. Weitere Informationen unter: http://www.apache.org/licenses/.
                                 
