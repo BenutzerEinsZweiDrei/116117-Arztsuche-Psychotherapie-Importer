@@ -4,6 +4,7 @@ import requests
 import openpyxl
 from datetime import datetime
 import time
+import base64  # <-- hinzugefügt für req-val Berechnung
 
 # Funktion, um die Koordinaten aus der CSV-Datei zu holen
 def get_lat_lon_from_plz(postcode):
@@ -28,6 +29,21 @@ def get_lat_lon_from_plz(postcode):
     except Exception as e:
         st.error(f"Fehler beim Lesen der CSV-Datei: {e}")
         return None, None
+
+# --- req-val Generator (Port der JS-Funktion), wie vorgeschlagen ---
+def c(e: float, t: float):
+    e += 1.1
+    [r, a] = str(e).split('.')
+    n = r[len(r) - 1]
+
+    t += 2.3
+    [l, c_] = str(t).split('.')
+    o = l[len(l) - 1]
+
+    s = "000" # time seems not to be checked
+
+    d = n + s[len(s) - 1] + o + s[len(s) - 2] + a[0] + s[len(s) - 3] + c_[0]
+    return base64.b64encode(d.encode("utf-8"))
 
 # Streamlit App
 st.set_page_config(page_title="116117 Therapie Finder", page_icon="🧠", layout="centered")
@@ -99,14 +115,12 @@ setting_options = {
 }
 setting_selection = st.selectbox("Setting", list(setting_options.keys()), index=0)
 
-# Eingabefelder für req-val und Authorization
-req_val = st.text_input("🔑 Req-val (siehe Hinweise links)", value="XXXXXXXXXx==")
-auth_code = st.text_input("🔐 Authorization Code (nach 'Basic ')", value="XXXXXXXXXXXXXXXXXXXXXx==")
+# --- KEINE User-Inputs für req-val & Authorization: fest hinterlegt / automatisch ---
+# Eingabefelder entfernt; statische Authorization + automatische req-val-Berechnung
+AUTH_CODE_BASE64 = "YmRwczpma3I0OTNtdmdfZg=="  # vom Nutzer vorgegeben
 
 if st.button("🔎 Psychotherapeut*innen finden"):
-    if not req_val or not auth_code:
-        st.warning("Bitte gib sowohl req-val als auch Authorization Code ein.")
-    elif not postcode:
+    if not postcode:
         st.warning("Bitte gib eine Postleitzahl ein.")
     else:
         # Holen der Koordinaten aus der CSV-Datei
@@ -114,11 +128,19 @@ if st.button("🔎 Psychotherapeut*innen finden"):
 
         if lat is not None and lon is not None:
             url = "https://arztsuche.116117.de/api/data"
+
+            # req-val aus lat/lon erzeugen (Bytes -> String)
+            try:
+                req_val_final = c(float(lat), float(lon)).decode("utf-8")
+            except Exception as e:
+                st.error(f"Fehler bei der req-val Generierung: {e}")
+                st.stop()
+
             headers = {
                 "Host": "arztsuche.116117.de",
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-                "req-val": req_val,
-                "Authorization": f"Basic {auth_code}"
+                "req-val": req_val_final,
+                "Authorization": f"Basic {AUTH_CODE_BASE64}"
             }
 
             data = {
