@@ -1,14 +1,15 @@
 ![Header Image](images/header.jpg)  
 
-# 116117 Psychotherapie-Suche Exporter
+# Therapie-Kontakte in deiner Nähe
 
+Bis zu 100 Kontakte von 116117 als Excel-Download – mit einfacher Anrufliste. Spart dir Zeit und Nerven.
 Ein einfacher 116117 Psychotherapie Suche Exporter zur Unterstützung bei der Suche nach Psychotherapieplätzen in Deutschland.
 
 ## Live-App
 
 Du kannst die Live-Version der App direkt hier aufrufen:
 
-[![Zur Live-App](https://img.shields.io/badge/Zur_App-116117_Psychotherapie_Suche_Exporter)](https://116117-psychotherapie-suche-exporter.streamlit.app/)
+[![Zur Live-App](https://img.shields.io/badge/🚀_Hier_starten-116117_Psychotherapie_Finder-brightgreen?style=for-the-badge)](https://116117-psychotherapie-suche-exporter.streamlit.app/)
 
 
 ## Hintergrund
@@ -40,7 +41,8 @@ Die folgenden Dateien zeigen, welche Daten über die App exportiert werden könn
 
 Die Daten für die Arztsuche werden über die API von [116117.de](https://arztsuche.116117.de/) abgerufen. Es ist wichtig, mit der Nutzung dieser API vorsichtig umzugehen, um Missbrauch und übermäßige Anfragen zu vermeiden. Das API-Angebot ist nicht für den intensiven, automatisierten Abruf von großen Datenmengen gedacht. Bitte stelle sicher, dass deine Nutzung der API den rechtlichen Bestimmungen entspricht und keine negativen Auswirkungen auf die Verfügbarkeit der API für andere Nutzer:innen hat.
 
-**Hinweis:** Derzeit ist das Copy-Paste der API-Infos etwas sperrig. Es könnte verbessert werden, um die Nutzung der Daten leichter und benutzerfreundlicher zu gestalten. Falls jemand hier eine Verbesserung beitragen kann, ist dies sehr willkommen!
+## Mitwirkende
+@flandweber - Danke für die Unterstützung bei der Automatisierung der API-Header!
 
 ## Lizenz
 
