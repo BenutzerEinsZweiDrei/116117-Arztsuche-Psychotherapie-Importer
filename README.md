@@ -44,7 +44,7 @@ Die folgenden Dateien zeigen, welche Daten über die App exportiert werden könn
 
 ## Nutzung der 116117 API
 
-Die Daten für die Arztsuche werden über die API von [116117.de](https://arztsuche.116117.de/) abgerufen. Es ist wichtig, mit der Nutzung dieser API vorsichtig umzugehen, um Missbrauch und übermäßige Anfragen zu vermeiden. Das API-Angebot ist nicht für den intensiven, automatisierten Abruf von großen Datenmengen gedacht. Bitte stelle sicher, dass deine Nutzung der API den rechtlichen Bestimmungen entspricht und keine negativen Auswirkungen auf die Verfügbarkeit der API für andere Nutzer:innen hat.
+Dies ist ein nicht-kommerzielles Projekt. Es besteht keine Verbindung zur KBV oder 116117. Alle Daten stammen aus öffentlich zugänglichen Quellen von 116117.de - über die API von [116117.de](https://arztsuche.116117.de/) abgerufen. Es ist wichtig, mit der Nutzung dieser API vorsichtig umzugehen, um Missbrauch und übermäßige Anfragen zu vermeiden. Das API-Angebot ist nicht für den intensiven, automatisierten Abruf von großen Datenmengen gedacht. Bitte stelle sicher, dass deine Nutzung der API den rechtlichen Bestimmungen entspricht und keine negativen Auswirkungen auf die Verfügbarkeit der API für andere Nutzer:innen hat.
 
 ## Mitwirkende
 @flandweber - Danke für die Unterstützung bei der Automatisierung der API-Header!
