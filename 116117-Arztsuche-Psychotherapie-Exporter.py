@@ -46,57 +46,45 @@ def c(e: float, t: float):
     return base64.b64encode(d.encode("utf-8"))
 
 # Streamlit App
-st.set_page_config(page_title="116117 Therapie Finder", page_icon="🧠", layout="centered")
 
-st.title("🧠 116117 Psychotherapie Finder")
-st.write("")
-st.markdown("""
-Die Suche nach einem Therapieplatz ist oft mühsam.\n
-Diese App erleichtert dir den Prozess: Sie sammelt und strukturiert die Daten von [arztsuche.116117.de](https://arztsuche.116117.de/), damit du dir Copy & Paste sparen kannst.\n\n
-Du erhältst bis zu 100 Einträge mit Kontaktdaten und einen übersichtlichen Wochenplan der Telefonsprechzeiten – hilfreich für deine Suche oder als Nachweis bei der Krankenkasse. 🙂
-""")
-st.write("")
+# Page config
+st.set_page_config(
+    page_title="Therapie-Kontakte in deiner Nähe",
+    page_icon="🔎",
+    layout="centered"
+)
+
+# Title + Subtitle
+st.title("🔎 Therapie-Kontakte in deiner Nähe")
+st.markdown(
+    "#### Bis zu 100 Kontakte von 116117 als Excel-Download – mit einfacher Anrufliste. Spart dir Zeit und Nerven."
+)
+
 
 # Sidebar für Hilfestellung
 with st.sidebar:
-    st.header("FAQ")
+    st.header("ℹ️ Infos")
     st.markdown("""
-          
-    **🔎 Wie funktioniert die App?**  
 
-    - Du gibst eine Postleitzahl und ein paar Filter ein.  
-    - Die App sucht automatisch nach Psychotherapeut*innen in deiner Nähe.  
-    - Sie bereinigt doppelte Einträge und fasst die wichtigsten Daten zusammen.  
-    - Am Ende kannst du alles als Excel-Datei herunterladen – praktisch für deine Anrufliste oder als Nachweis für die Krankenkasse.     
+                
+    Die Suche nach einem Therapieplatz ist oft mühsam.\n Diese App soll es dir erleichtern: Sie sammelt und strukturiert die Daten von [arztsuche.116117.de](https://arztsuche.116117.de/) und lädt sie für dich als Excel-Datei herunter.\n\n
+    Du erhältst bis zu 100 Einträge mit Kontaktdaten und einen übersichtlichen Wochenplan der Telefonsprechzeiten – hilfreich für deine Suche oder als Nachweis bei der Krankenkasse. 
+                
+    Selbstverständlich ist diese App kostenlos.
+
+    ---
+               
+    Diese App speichert keine persönlichen Daten.
+    Es gibt keine eigene Datenbank – es werden ausschließlich öffentlich zugängliche Informationen neu aufbereitet.
     
-    **❓ Warum existiert diese App?**  
+    ---
 
-    Therapieplätze sind rar, besonders mit gesetzlicher Versicherung.  
-    Oft muss man zig Praxen anrufen, bekommt Absagen, und Wartezeiten betragen bis zu 1 Jahr.  
-    Dieser Prozess ist sehr kräftezehrend.  
-
-    Die App soll dir Zeit und Nerven sparen: schnell, strukturiert, mit Sprechzeiten.  
-    Und wenn du keinen Platz findest, kannst du die Excel-Datei als Nachweis bei der Krankenkasse nutzen, um eine Kostenerstattung zu beantragen.  
-
-    Zusätzlich ist der Export für sehbehinderte Menschen hilfreich, weil die Infos barrierefrei in Excel vorliegen (siehe [FragDenStaat](https://fragdenstaat.de/a/299392)).  
-
-    **⚙️ Ein Blick hinter die Kulissen**  
-
-    Die App nutzt die gleiche offizielle Datenquelle wie die 116117-Webseite.  
-    Normalerweise sind die Daten nur für den Browser gedacht – hier übernimmt die App den technischen Teil:  
-    - Sie erzeugt automatisch die notwendigen Zugangscodes  
-    - Fragt die Daten ab  
-    - Strukturiert sie neu in einer Excel-Datei  
-
-    Keine eigenen Datenbanken, keine Speicherung persönlicher Daten – nur die öffentlich zugänglichen Infos werden neu aufbereitet.  
-
-    ---  
     Diese App verwendet Daten aus dem Repository [WZBSocialScienceCenter/plz_geocoord](https://github.com/WZBSocialScienceCenter/plz_geocoord), lizenziert unter Apache 2.0.  
     """)
 
 
 # PLZ Eingabe für den User
-postcode = st.text_input("📍 Postleitzahl", value="12345")
+postcode = st.text_input("Postleitzahl", value="12345")
 
 # Auswahl für Psychotherapie: Verfahren
 verfahren_options = {
@@ -225,13 +213,13 @@ if st.button("🔎 Psychotherapeut*innen finden"):
                             # Download-Button anzeigen
                             with open("116117_therapeuten_mit_sprechstunden.xlsx", "rb") as file:
                                 st.download_button(
-                                    label="📥 Excel-Datei herunterladen",
+                                    label="📥 Excel-Datei mit Therapie-Kontakten herunterladen",
                                     data=file,
                                     file_name="116117_therapeuten_mit_sprechstunden.xlsx",
                                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                                 )
 
-                            st.info("Viel Erfolg bei der Suche nach einer Therapie!")
+                            st.info("Viel Erfolg bei der Suche nach einer Therapie! :)")
                         else:
                             st.error("❌ Antwort enthält keine 'arztPraxisDatas'.")
                     except Exception as e:
