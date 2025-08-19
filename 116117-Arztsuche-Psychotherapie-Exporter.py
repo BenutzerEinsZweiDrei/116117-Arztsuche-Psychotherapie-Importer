@@ -49,26 +49,51 @@ def c(e: float, t: float):
 st.set_page_config(page_title="116117 Therapie Finder", page_icon="🧠", layout="centered")
 
 st.title("🧠 116117 Psychotherapie Finder")
-st.markdown("Die Suche nach einem Therapieplatz kann ganz schön anstrengend sein. Diese App soll dir dabei helfen! Sie speichert die Daten von https://arztsuche.116117.de/ strukturiert, damit du dir das lästige Copy & Paste sparen kannst. \n\n Du bekommst eine Liste mit maximal 100 Psychotherapeut*innen sowie einen Wochenplan der Telefonsprechzeiten. So wird die Suche nach einem Therapieplatz hoffentlich leichter – oder dein Antrag auf Kostenerstattung etwas unkomplizierter! :) ")
+st.write("")
+st.markdown("""
+Die Suche nach einem Therapieplatz ist oft mühsam.\n
+Diese App erleichtert dir den Prozess: Sie sammelt und strukturiert die Daten von [arztsuche.116117.de](https://arztsuche.116117.de/), damit du dir Copy & Paste sparen kannst.\n\n
+Du erhältst bis zu 100 Einträge mit Kontaktdaten und einen übersichtlichen Wochenplan der Telefonsprechzeiten – hilfreich für deine Suche oder als Nachweis bei der Krankenkasse. 🙂
+""")
+st.write("")
 
 # Sidebar für Hilfestellung
 with st.sidebar:
-    st.header("Infos")
+    st.header("FAQ")
     st.markdown("""
-    
+          
     **🔎 Wie funktioniert die App?**  
-    Du gibst eine Postleitzahl und ein paar Filter ein. Die App bestimmt den passenden Ort und fragt die offizielle Arztsuche automatisiert nach Psychotherapeut*innen in deiner Nähe. Die Ergebnisse werden aufbereitet, doppelte Infos bereinigt und die wichtigsten Kontaktdaten samt telefonischen Sprechzeiten übersichtlich zusammengestellt. Am Ende bekommst du alles als Excel-Datei zum Download – praktisch für deine Anrufliste oder als Nachweis für die Krankenkasse.        
 
-    **❓ Warum existiert diese App?**  
-    Therapieplätze sind rar. Wartelisten voll, besonder mit gesetzlicher Versicherung. Man muss oft zig Praxen anrufen, bekommt nur Absagen, Wartezeiten betragen häufig 1 Jahr und der ganze Prozess ist sehr kräftezehrend. Das Problem ist schon lange bekannt. Mit der App will ich den Prozess erleichtern: schnell, strukturiert, mit Sprechzeiten. Wer keinen Platz findet, kann die Excel-Datei als Basis für den Kontaktnachweis für die Krankenkasse nutzen, um eine Kostenerstattung bei Systemversagen zu beantragen. Zudem kann ein Export der Arztsuche als Datei sehbinderten Personen helfen, siehe https://fragdenstaat.de/a/299392.
-
-    **⚙️ Ein Blick hinter die Kulissen**
-    App greift im Hintergrund auf die gleiche Schnittstelle (API) zu, die auch die Webseite der Arztsuche nutzt. Normalerweise werden diese Daten nur für den Browser aufbereitet – hier übernimmt die App den technischen Teil: sie erzeugt automatisch die notwendigen Zugangs-Codes, stellt eine Anfrage an die API, filtert die Ergebnisse nach deinen Eingaben und wandelt alles in eine Excel-Datei um. Es werden keine eigenen Datenbanken betrieben und keine persönlichen Daten gespeichert, sondern nur die öffentlich zugänglichen Informationen neu strukturiert.
+    - Du gibst eine Postleitzahl und ein paar Filter ein.  
+    - Die App sucht automatisch nach Psychotherapeut*innen in deiner Nähe.  
+    - Sie bereinigt doppelte Einträge und fasst die wichtigsten Daten zusammen.  
+    - Am Ende kannst du alles als Excel-Datei herunterladen – praktisch für deine Anrufliste oder als Nachweis für die Krankenkasse.     
     
-    ---            
-    Diese App verwendet Daten aus dem Repository [WZBSocialScienceCenter/plz_geocoord](https://github.com/WZBSocialScienceCenter/plz_geocoord), das unter der Apache License 2.0 lizenziert ist. Weitere Informationen unter: http://www.apache.org/licenses/.
-                                
+    **❓ Warum existiert diese App?**  
+
+    Therapieplätze sind rar, besonders mit gesetzlicher Versicherung.  
+    Oft muss man zig Praxen anrufen, bekommt Absagen, und Wartezeiten betragen bis zu 1 Jahr.  
+    Dieser Prozess ist sehr kräftezehrend.  
+
+    Die App soll dir Zeit und Nerven sparen: schnell, strukturiert, mit Sprechzeiten.  
+    Und wenn du keinen Platz findest, kannst du die Excel-Datei als Nachweis bei der Krankenkasse nutzen, um eine Kostenerstattung zu beantragen.  
+
+    Zusätzlich ist der Export für sehbehinderte Menschen hilfreich, weil die Infos barrierefrei in Excel vorliegen (siehe [FragDenStaat](https://fragdenstaat.de/a/299392)).  
+
+    **⚙️ Ein Blick hinter die Kulissen**  
+
+    Die App nutzt die gleiche offizielle Datenquelle wie die 116117-Webseite.  
+    Normalerweise sind die Daten nur für den Browser gedacht – hier übernimmt die App den technischen Teil:  
+    - Sie erzeugt automatisch die notwendigen Zugangscodes  
+    - Fragt die Daten ab  
+    - Strukturiert sie neu in einer Excel-Datei  
+
+    Keine eigenen Datenbanken, keine Speicherung persönlicher Daten – nur die öffentlich zugänglichen Infos werden neu aufbereitet.  
+
+    ---  
+    Diese App verwendet Daten aus dem Repository [WZBSocialScienceCenter/plz_geocoord](https://github.com/WZBSocialScienceCenter/plz_geocoord), lizenziert unter Apache 2.0.  
     """)
+
 
 # PLZ Eingabe für den User
 postcode = st.text_input("📍 Postleitzahl", value="12345")
