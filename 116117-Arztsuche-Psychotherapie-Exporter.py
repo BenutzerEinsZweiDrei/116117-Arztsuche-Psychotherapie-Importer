@@ -2,9 +2,11 @@ import streamlit as st
 import pandas as pd
 import requests
 import openpyxl
-from datetime import datetime
+from datetime import datetime, timedelta  # <-- timedelta ergänzt
 import time
 import base64  # <-- hinzugefügt für req-val Berechnung
+from zoneinfo import ZoneInfo  # <-- hinzugefügt für Zeitzone Europe/Berlin
+import re  # <-- hinzugefügt für robuste Zeitformat-Parsing
 
 # Funktion, um die Koordinaten aus der CSV-Datei zu holen
 def get_lat_lon_from_plz(postcode):
@@ -44,6 +46,112 @@ def c(e: float, t: float):
 
     d = n + s[len(s) - 1] + o + s[len(s) - 2] + a[0] + s[len(s) - 3] + c_[0]
     return base64.b64encode(d.encode("utf-8"))
+
+# ---- Neu: Helfer für "jetzt telefonisch erreichbar" & "nächste Zeitfenster" ----
+def _parse_time(hhmm: str):
+    return datetime.strptime(hhmm.strip(), "%H:%M").time()
+
+weekday_idx_map = {"Mo.": 0, "Di.": 1, "Mi.": 2, "Do.": 3, "Fr.": 4, "Sa.": 5, "So.": 6}
+
+def is_reachable_now(arzt: dict, now_dt: datetime) -> bool:
+    """Prüft, ob der Eintrag jetzt (Europe/Berlin) telefonisch erreichbar ist."""
+    today_idx = now_dt.weekday()
+
+    for ts in arzt.get("tsz", []):
+        tag = ts.get("t", "")
+        if weekday_idx_map.get(tag, -1) != today_idx:
+            continue
+        for ts_typ in ts.get("tszDesTyps", []):
+            if ts_typ.get("typ") != "Telefonische Erreichbarkeit":
+                continue
+            for sprechzeit in ts_typ.get("sprechzeiten", []):
+                raw = (sprechzeit.get("zeit", "") or "").replace(" ", "")
+                # mehrere Intervalle per ; oder , getrennt erlauben
+                for interval in re.split(r"[;,]", raw):
+                    if not interval or "-" not in interval:
+                        continue
+                    try:
+                        start_s, end_s = interval.split("-")
+                        start_t, end_t = _parse_time(start_s), _parse_time(end_s)
+                        if start_t <= now_dt.time() <= end_t:
+                            return True
+                    except Exception:
+                        continue
+    return False
+
+def todays_phone_windows(arzt: dict, now_dt: datetime) -> str:
+    """Gibt alle heutigen Telefonzeiten als kommagetrennte Liste zurück (für Anzeige)."""
+    today_idx = now_dt.weekday()
+    windows = []
+    for ts in arzt.get("tsz", []):
+        if weekday_idx_map.get(ts.get("t", ""), -1) != today_idx:
+            continue
+        for ts_typ in ts.get("tszDesTyps", []):
+            if ts_typ.get("typ") == "Telefonische Erreichbarkeit":
+                for sprechzeit in ts_typ.get("sprechzeiten", []):
+                    w = sprechzeit.get("zeit", "").strip()
+                    if w:
+                        windows.append(w)
+    # Duplikate entfernen, sortiert ausgeben
+    return ", ".join(sorted(set(windows)))
+
+def _norm_tel(t: str) -> str:
+    # Nur Ziffern behalten -> stabile Vergleichsbasis für Duplikaterkennung
+    return re.sub(r"\D+", "", t or "")
+
+def next_available_windows(arzt_liste: list[dict], now_dt: datetime, max_results: int = 5):
+    """Sucht die nächsten Telefon-Zeitfenster (nur zukünftige Starts; bis 7 Tage voraus), ohne Duplikate."""
+    results = []
+    seen = set()  # <-- Duplikate verhindern
+    tz = ZoneInfo("Europe/Berlin")
+    now_local = now_dt  # already in Europe/Berlin
+
+    for a in arzt_liste:
+        name = a.get("name", "") or ""
+        tel = a.get("tel", "") or ""
+        tel_norm = _norm_tel(tel)
+        ort = a.get("ort", "") or ""
+        plz = a.get("plz", "") or ""
+        arzt_id = a.get("id", "") or ""
+
+        for day_offset in range(0, 7):  # heute + nächste 6 Tage
+            day_dt = (now_local + timedelta(days=day_offset)).date()
+            for ts in a.get("tsz", []):
+                tag = ts.get("t", "")
+                if weekday_idx_map.get(tag, -1) != (now_local.weekday() + day_offset) % 7:
+                    continue
+                for ts_typ in ts.get("tszDesTyps", []):
+                    if ts_typ.get("typ") != "Telefonische Erreichbarkeit":
+                        continue
+                    for sprechzeit in ts_typ.get("sprechzeiten", []):
+                        raw = (sprechzeit.get("zeit", "") or "").replace(" ", "")
+                        for interval in re.split(r"[;,]", raw):
+                            if not interval or "-" not in interval:
+                                continue
+                            try:
+                                start_s, end_s = interval.split("-")
+                                start_t, end_t = _parse_time(start_s), _parse_time(end_s)
+                                start_dt = datetime.combine(day_dt, start_t).replace(tzinfo=tz)
+                                end_dt = datetime.combine(day_dt, end_t).replace(tzinfo=tz)
+                                # NUR echte Zukunft: Start > jetzt (keine laufenden Slots)
+                                if start_dt > now_local:
+                                    key = (arzt_id, name.strip(), tel_norm, start_dt, end_dt)
+                                    if key in seen:
+                                        continue
+                                    seen.add(key)
+                                    results.append({
+                                        "Start": start_dt,
+                                        "Ende": end_dt,
+                                        "Name": name,
+                                        "Telefon": tel,
+                                        "Ort": ort,
+                                        "PLZ": plz
+                                    })
+                            except Exception:
+                                continue
+    # Nach Startzeit sortieren und begrenzen
+    results_sorted = sorted(results, key=lambda x: x["Start"])[:max_results]
+    return results_sorted
 
 # Streamlit App
 
@@ -161,6 +269,49 @@ if st.button("🔎 Psychotherapeut*innen finden"):
                         if "arztPraxisDatas" in response_data:
                             arzt_praxis_daten = response_data["arztPraxisDatas"]
 
+                            # --- Jetzt erreichbar (Europe/Berlin) ---
+                            try:
+                                now_berlin = datetime.now(ZoneInfo("Europe/Berlin"))
+                                reachable = [a for a in arzt_praxis_daten if is_reachable_now(a, now_berlin)]
+
+                                st.subheader("📞 Jetzt telefonisch erreichbar")
+                                st.caption(f"Aktuelle Zeit: {now_berlin.strftime('%a, %d.%m.%Y %H:%M')} – Treffer: {len(reachable)}")
+
+                                if reachable:
+                                    df_now = pd.DataFrame([{
+                                        "Name": a.get("name", ""),
+                                        "Telefon": a.get("tel", ""),
+                                        "Ort": a.get("ort", ""),
+                                        "PLZ": a.get("plz", ""),
+                                        "Zeiten heute": todays_phone_windows(a, now_berlin),
+                                        "Entfernung (m)": a.get("distance", "")
+                                    } for a in reachable])
+
+                                    if "Entfernung (m)" in df_now.columns:
+                                        df_now = df_now.sort_values(by=["Entfernung (m)"], kind="stable")
+
+                                    st.dataframe(df_now.head(10), use_container_width=True, hide_index=True)
+                                else:
+                                    st.info("Gerade ist leider niemand mit ausgewiesener telefonischer Erreichbarkeit verfügbar.")
+
+                                # --- Immer anzeigen: Nächste verfügbare Telefonsprechzeiten (Top 5) ---
+                                next_slots = next_available_windows(arzt_praxis_daten, now_berlin, max_results=5)
+                                if next_slots:
+                                    st.subheader("⏭️ Nächste Telefonsprechzeiten")
+                                    df_next = pd.DataFrame([{
+                                        "Telefonsprechzeit": f'{s["Start"].strftime("%d.%m.%Y %H:%M")} bis {s["Ende"].strftime("%H:%M")}',
+                                        "Name": s["Name"],
+                                        "Telefon": s["Telefon"],
+                                        "Ort": s["Ort"],
+                                        "PLZ": s["PLZ"]
+                                    } for s in next_slots])
+                                    st.dataframe(df_next, use_container_width=True, hide_index=True)
+                                else:
+                                    st.caption("Keine kommenden Telefonsprechzeiten in den nächsten 7 Tagen gefunden.")
+
+                            except Exception as e:
+                                st.warning(f"Vorschau konnte nicht angezeigt werden: {e}")
+
                             wb = openpyxl.Workbook()
                             ws_praxis = wb.active
                             ws_praxis.title = "Praxisdaten"
@@ -204,7 +355,7 @@ if st.button("🔎 Psychotherapeut*innen finden"):
                             # Ladebalken simulieren
                             progress_bar = st.progress(0)
                             for i in range(100):
-                                time.sleep(0.02)  # Simuliere eine Pause von 20ms "oh da passiert ja was!"
+                                time.sleep(0.05)  # Simuliere eine Pause von 20ms "oh da passiert ja was!"
                                 progress_bar.progress(i + 1)
 
                             # Speichern der Datei
