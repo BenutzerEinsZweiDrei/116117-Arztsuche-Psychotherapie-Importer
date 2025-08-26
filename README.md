@@ -28,6 +28,7 @@ Ich habe diese App entwickelt, weil es extrem schwierig ist, freie gesetzliche T
 - Filter nach Verfahrensart, Setting, Einzel/Gruppentherapie
 - Exportiere Ergebnisse inkl. Adresse, Fachrichtung und Telefonnummer  
 - Telefonzeiten werden strukturiert abgespeichert in separatem Tab
+- Telefonzeiten momentan sowie die nächsten fünf Telefonzeiten werden direkt angezeigt
 
 ## Beispiel Exporte
 
