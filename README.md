@@ -39,7 +39,7 @@ Die folgenden Dateien zeigen, welche Daten über die App exportiert werden könn
 - ![Beispiel Export Telefonsprechzeiten](images/beispiel_export_telefonsprechzeiten.png)  
   Beispiel für die exportierten Telefonsprechzeiten.
 
-- ![Beispiel Template Excel](images/Beispiel%20Template.xlsx)  
+- [Beispiel Template Excel](images/Beispiel%20Template.xlsx)  
   Beispiel einer Excel-Datei, in der die Suchergebnisse exportiert werden können.
 
 ## Nutzung der 116117 API
