@@ -7,6 +7,17 @@ import time
 import base64  # <-- hinzugefügt für req-val Berechnung
 from zoneinfo import ZoneInfo  # <-- hinzugefügt für Zeitzone Europe/Berlin
 import re  # <-- hinzugefügt für robuste Zeitformat-Parsing
+import os  # <-- hinzugefügt für Datei-Existenzprüfung
+
+# --- Session-State Defaults ---
+if "downloaded" not in st.session_state:
+    st.session_state["downloaded"] = False
+if "arzt_praxis_daten" not in st.session_state:
+    st.session_state["arzt_praxis_daten"] = None
+if "now_berlin_iso" not in st.session_state:
+    st.session_state["now_berlin_iso"] = None
+if "excel_path" not in st.session_state:
+    st.session_state["excel_path"] = None
 
 # Funktion, um die Koordinaten aus der CSV-Datei zu holen
 def get_lat_lon_from_plz(postcode):
@@ -168,7 +179,6 @@ st.markdown(
     "#### Bis zu 100 Kontakte von 116117 als Excel-Download – mit einfacher Anrufliste. Spart dir Zeit und Nerven."
 )
 
-
 # Sidebar für Hilfestellung
 with st.sidebar:
     st.header("ℹ️ Infos")
@@ -189,7 +199,6 @@ with st.sidebar:
 
     Diese App verwendet Daten aus dem Repository [WZBSocialScienceCenter/plz_geocoord](https://github.com/WZBSocialScienceCenter/plz_geocoord), lizenziert unter Apache 2.0.  
     """)
-
 
 # PLZ Eingabe für den User
 postcode = st.text_input("Postleitzahl", value="12345")
@@ -221,6 +230,9 @@ setting_selection = st.selectbox("Setting", list(setting_options.keys()), index=
 # Eingabefelder entfernt; statische Authorization + automatische req-val-Berechnung
 AUTH_CODE_BASE64 = "YmRwczpma3I0OTNtdmdfZg=="  # vom Nutzer vorgegeben
 
+# ===========================
+# SUCHE AUSFÜHREN
+# ===========================
 if st.button("🔎 Psychotherapeut*innen finden"):
     if not postcode:
         st.warning("Bitte gib eine Postleitzahl ein.")
@@ -269,49 +281,7 @@ if st.button("🔎 Psychotherapeut*innen finden"):
                         if "arztPraxisDatas" in response_data:
                             arzt_praxis_daten = response_data["arztPraxisDatas"]
 
-                            # --- Jetzt erreichbar (Europe/Berlin) ---
-                            try:
-                                now_berlin = datetime.now(ZoneInfo("Europe/Berlin"))
-                                reachable = [a for a in arzt_praxis_daten if is_reachable_now(a, now_berlin)]
-
-                                st.subheader("📞 Jetzt telefonisch erreichbar")
-                                st.caption(f"Aktuelle Zeit: {now_berlin.strftime('%a, %d.%m.%Y %H:%M')} – Treffer: {len(reachable)}")
-
-                                if reachable:
-                                    df_now = pd.DataFrame([{
-                                        "Name": a.get("name", ""),
-                                        "Telefon": a.get("tel", ""),
-                                        "Ort": a.get("ort", ""),
-                                        "PLZ": a.get("plz", ""),
-                                        "Zeiten heute": todays_phone_windows(a, now_berlin),
-                                        "Entfernung (m)": a.get("distance", "")
-                                    } for a in reachable])
-
-                                    if "Entfernung (m)" in df_now.columns:
-                                        df_now = df_now.sort_values(by=["Entfernung (m)"], kind="stable")
-
-                                    st.dataframe(df_now.head(10), use_container_width=True, hide_index=True)
-                                else:
-                                    st.info("Gerade ist leider niemand mit ausgewiesener telefonischer Erreichbarkeit verfügbar.")
-
-                                # --- Immer anzeigen: Nächste verfügbare Telefonsprechzeiten (Top 5) ---
-                                next_slots = next_available_windows(arzt_praxis_daten, now_berlin, max_results=5)
-                                if next_slots:
-                                    st.subheader("⏭️ Nächste Telefonsprechzeiten")
-                                    df_next = pd.DataFrame([{
-                                        "Telefonsprechzeit": f'{s["Start"].strftime("%d.%m.%Y %H:%M")} bis {s["Ende"].strftime("%H:%M")}',
-                                        "Name": s["Name"],
-                                        "Telefon": s["Telefon"],
-                                        "Ort": s["Ort"],
-                                        "PLZ": s["PLZ"]
-                                    } for s in next_slots])
-                                    st.dataframe(df_next, use_container_width=True, hide_index=True)
-                                else:
-                                    st.caption("Keine kommenden Telefonsprechzeiten in den nächsten 7 Tagen gefunden.")
-
-                            except Exception as e:
-                                st.warning(f"Vorschau konnte nicht angezeigt werden: {e}")
-
+                            # -------- Excel erzeugen wie gehabt --------
                             wb = openpyxl.Workbook()
                             ws_praxis = wb.active
                             ws_praxis.title = "Praxisdaten"
@@ -359,18 +329,18 @@ if st.button("🔎 Psychotherapeut*innen finden"):
                                 progress_bar.progress(i + 1)
 
                             # Speichern der Datei
-                            wb.save("116117_therapeuten_mit_sprechstunden.xlsx")
-                            
-                            # Download-Button anzeigen
-                            with open("116117_therapeuten_mit_sprechstunden.xlsx", "rb") as file:
-                                st.download_button(
-                                    label="📥 Excel-Datei mit Therapie-Kontakten herunterladen",
-                                    data=file,
-                                    file_name="116117_therapeuten_mit_sprechstunden.xlsx",
-                                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                                )
+                            excel_path = "116117_therapeuten_mit_sprechstunden.xlsx"
+                            wb.save(excel_path)
 
-                            st.info("Viel Erfolg bei der Suche nach einer Therapie! :)")
+                            # --- Session persistieren + RERUN (wichtig: keine doppelte Anzeige) ---
+                            now_berlin = datetime.now(ZoneInfo("Europe/Berlin"))
+                            st.session_state["arzt_praxis_daten"] = arzt_praxis_daten
+                            st.session_state["now_berlin_iso"] = now_berlin.isoformat()
+                            st.session_state["excel_path"] = excel_path
+                            st.session_state["downloaded"] = False  # reset bei neuer Suche
+
+                            st.rerun()  # <<< nur noch unten aus Session rendern
+
                         else:
                             st.error("❌ Antwort enthält keine 'arztPraxisDatas'.")
                     except Exception as e:
@@ -379,3 +349,68 @@ if st.button("🔎 Psychotherapeut*innen finden"):
                     st.error(f"❌ Anfrage fehlgeschlagen (Statuscode {response.status_code})")
             except requests.exceptions.RequestException as e:
                 st.error(f"Fehler bei der Anfrage: {e}")
+
+# ===========================
+# ANSICHT AUS SESSION WIEDERHERSTELLEN (einzige Render-Stelle)
+# ===========================
+if st.session_state["arzt_praxis_daten"]:
+    try:
+        now_iso = st.session_state["now_berlin_iso"]
+        now_berlin_cached = datetime.fromisoformat(now_iso) if now_iso else datetime.now(ZoneInfo("Europe/Berlin"))
+        arzt_praxis_daten_cached = st.session_state["arzt_praxis_daten"]
+
+        reachable_cached = [a for a in arzt_praxis_daten_cached if is_reachable_now(a, now_berlin_cached)]
+
+        st.subheader("📞 Jetzt telefonisch erreichbar")
+        st.caption(f"Aktuelle Zeit: {now_berlin_cached.strftime('%a, %d.%m.%Y %H:%M')} – Treffer: {len(reachable_cached)}")
+
+        if reachable_cached:
+            df_now_cached = pd.DataFrame([{
+                "Name": a.get("name", ""),
+                "Telefon": a.get("tel", ""),
+                "Ort": a.get("ort", ""),
+                "PLZ": a.get("plz", ""),
+                "Zeiten heute": todays_phone_windows(a, now_berlin_cached),
+                "Entfernung (m)": a.get("distance", "")
+            } for a in reachable_cached])
+            if "Entfernung (m)" in df_now_cached.columns:
+                df_now_cached = df_now_cached.sort_values(by=["Entfernung (m)"], kind="stable")
+            st.dataframe(df_now_cached.head(10), use_container_width=True, hide_index=True)
+        else:
+            st.info("Gerade ist leider niemand mit ausgewiesener telefonischer Erreichbarkeit verfügbar.")
+
+        next_slots_cached = next_available_windows(arzt_praxis_daten_cached, now_berlin_cached, max_results=5)
+        if next_slots_cached:
+            st.subheader("⏭️ Nächste Telefonsprechzeiten")
+            df_next_cached = pd.DataFrame([{
+                "Telefonsprechzeit": f'{s["Start"].strftime("%d.%m.%Y %H:%M")} bis {s["Ende"].strftime("%H:%M")}',
+                "Name": s["Name"],
+                "Telefon": s["Telefon"],
+                "Ort": s["Ort"],
+                "PLZ": s["PLZ"]
+            } for s in next_slots_cached])
+            st.dataframe(df_next_cached, use_container_width=True, hide_index=True)
+        else:
+            st.caption("Keine kommenden Telefonsprechzeiten in den nächsten 7 Tagen gefunden.")
+
+        # Persistenter Download-Button (einmalig, mit stabilem key)
+        if st.session_state["excel_path"] and os.path.exists(st.session_state["excel_path"]):
+            with open(st.session_state["excel_path"], "rb") as file:
+                clicked_cached = st.download_button(
+                    key="download_xlsx",  # <<< eindeutiger Schlüssel
+                    label=("📥 Excel-Datei mit Therapie-Kontakten herunterladen"
+                           if not st.session_state["downloaded"]
+                           else "✅ Erfolgreich heruntergeladen!"),
+                    data=file,
+                    file_name="116117_therapeuten_mit_sprechstunden.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    disabled=st.session_state["downloaded"]
+                )
+            if clicked_cached:
+                st.session_state["downloaded"] = True
+                st.rerun()  # UI sofort mit neuem Label/disabled zeigen
+            
+            st.info("Viel Erfolg bei der Suche nach einem Therapieplatz! :)")
+
+    except Exception as e:
+        st.warning(f"Ansicht konnte nicht aus dem Zwischenspeicher wiederhergestellt werden: {e}")

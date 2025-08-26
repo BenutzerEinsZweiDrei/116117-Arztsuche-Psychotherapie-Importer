@@ -1,0 +1,41 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# --- Virtual Environments ---
+.venv/
+venv/
+env/
+ENV/
+
+# --- Distribution / Packaging ---
+*.egg-info/
+*.egg
+build/
+dist/
+
+# --- Jupyter Notebook ---
+.ipynb_checkpoints
+
+# --- Logs / Temp ---
+*.log
+*.tmp
+*.DS_Store
+
+# --- IDE / Editor ---
+.vscode/
+.idea/
+*.swp
+
+# --- Data / Output ---
+*.xlsx
+*.xls
+*.csv
+*.json
+!images/Beispiel Template.xlsx
+
+# --- Streamlit Cache ---
+.streamlit/
