@@ -49,6 +49,7 @@ Dies ist ein nicht-kommerzielles Projekt. Es besteht keine Verbindung zur KBV od
 
 ## Mitwirkende
 @flandweber - Danke für die Unterstützung bei der Automatisierung der API-Header!
+@LeaRain - Toller Vortrag auf der EasterHegg 2025 zu dem Thema: https://media.ccc.de/v/eh22-107-psychotherapiesuche-erfahrungsbericht-mit-automatisierung/playlist
 
 ## Lizenz
 
