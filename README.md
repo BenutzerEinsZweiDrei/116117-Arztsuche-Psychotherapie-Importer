@@ -30,6 +30,7 @@ Ich habe diese App entwickelt, weil es extrem schwierig ist, freie gesetzliche T
 - Telefonzeiten werden strukturiert abgespeichert in separatem Tab
 - Telefonzeiten momentan sowie die nächsten fünf Telefonzeiten werden direkt angezeigt
 
+
 ## Beispiel Exporte
 
 Die folgenden Dateien zeigen, welche Daten über die App exportiert werden können:
@@ -43,13 +44,17 @@ Die folgenden Dateien zeigen, welche Daten über die App exportiert werden könn
 - [Beispiel Template Excel](images/Beispiel%20Template.xlsx)  
   Beispiel einer Excel-Datei, in der die Suchergebnisse exportiert werden können.
 
+
 ## Nutzung der 116117 API
 
 Dies ist ein nicht-kommerzielles Projekt. Es besteht keine Verbindung zur KBV oder 116117. Alle Daten stammen aus öffentlich zugänglichen Quellen von 116117.de - über die API von [116117.de](https://arztsuche.116117.de/) abgerufen. Es ist wichtig, mit der Nutzung dieser API vorsichtig umzugehen, um Missbrauch und übermäßige Anfragen zu vermeiden. Das API-Angebot ist nicht für den intensiven, automatisierten Abruf von großen Datenmengen gedacht. Bitte stelle sicher, dass deine Nutzung der API den rechtlichen Bestimmungen entspricht und keine negativen Auswirkungen auf die Verfügbarkeit der API für andere Nutzer:innen hat.
 
+
 ## Mitwirkende
 @flandweber - Danke für die Unterstützung bei der Automatisierung der API-Header!
+
 @LeaRain - Toller Vortrag auf der EasterHegg 2025 zu dem Thema: https://media.ccc.de/v/eh22-107-psychotherapiesuche-erfahrungsbericht-mit-automatisierung/playlist
+
 
 ## Lizenz
 
