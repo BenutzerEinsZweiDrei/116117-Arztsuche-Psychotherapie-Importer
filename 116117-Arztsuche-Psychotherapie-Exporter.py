@@ -8,6 +8,7 @@ import base64  # <-- hinzugefügt für req-val Berechnung
 from zoneinfo import ZoneInfo  # <-- hinzugefügt für Zeitzone Europe/Berlin
 import re  # <-- hinzugefügt für robuste Zeitformat-Parsing
 import os  # <-- hinzugefügt für Datei-Existenzprüfung
+import math  # <-- hinzugefügt fürs Aufrunden von Distanzen
 
 # --- Session-State Defaults ---
 if "downloaded" not in st.session_state:
@@ -203,6 +204,11 @@ with st.sidebar:
 # PLZ Eingabe für den User
 postcode = st.text_input("Postleitzahl", value="12345")
 
+# Radius Auswahl
+radius_options = [5, 10, 25, 50, 100]
+radius_selection = st.selectbox("Suchradius (in km)", radius_options, index=2)  # Default 25 km
+
+
 # Auswahl für Psychotherapie: Verfahren
 verfahren_options = {
     "Analytische Psychotherapie": "A",
@@ -280,6 +286,13 @@ if st.button("🔎 Psychotherapeut*innen finden"):
                         response_data = response.json()
                         if "arztPraxisDatas" in response_data:
                             arzt_praxis_daten = response_data["arztPraxisDatas"]
+
+                            # Filter nach Radius
+                            arzt_praxis_daten = [
+                                a for a in arzt_praxis_daten
+                                if a.get("distance", 0) <= radius_selection * 1000
+                            ]
+
 
                             # -------- Excel erzeugen wie gehabt --------
                             wb = openpyxl.Workbook()
@@ -362,7 +375,7 @@ if st.session_state["arzt_praxis_daten"]:
         reachable_cached = [a for a in arzt_praxis_daten_cached if is_reachable_now(a, now_berlin_cached)]
 
         st.subheader("📞 Jetzt telefonisch erreichbar")
-        st.caption(f"Aktuelle Zeit: {now_berlin_cached.strftime('%a, %d.%m.%Y %H:%M')} – Treffer: {len(reachable_cached)}")
+        st.caption(f"Aktuelle Zeit: {now_berlin_cached.strftime('%a, %d.%m.%Y, %H:%M')} – Treffer: {len(reachable_cached)}")
 
         if reachable_cached:
             df_now_cached = pd.DataFrame([{
@@ -371,7 +384,7 @@ if st.session_state["arzt_praxis_daten"]:
                 "Ort": a.get("ort", ""),
                 "PLZ": a.get("plz", ""),
                 "Zeiten heute": todays_phone_windows(a, now_berlin_cached),
-                "Entfernung (m)": a.get("distance", "")
+                ## "Entfernung (m)": a.get("distance", "")
             } for a in reachable_cached])
             if "Entfernung (m)" in df_now_cached.columns:
                 df_now_cached = df_now_cached.sort_values(by=["Entfernung (m)"], kind="stable")
@@ -383,7 +396,7 @@ if st.session_state["arzt_praxis_daten"]:
         if next_slots_cached:
             st.subheader("⏭️ Nächste Telefonsprechzeiten")
             df_next_cached = pd.DataFrame([{
-                "Telefonsprechzeit": f'{s["Start"].strftime("%d.%m.%Y %H:%M")} bis {s["Ende"].strftime("%H:%M")}',
+                "Telefonsprechzeit": f'{s["Start"].strftime("%d.%m.%Y, %H:%M")} bis {s["Ende"].strftime("%H:%M")}',
                 "Name": s["Name"],
                 "Telefon": s["Telefon"],
                 "Ort": s["Ort"],
